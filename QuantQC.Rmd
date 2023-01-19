@@ -112,7 +112,7 @@ cellID$sample[is.na(cellID$sample)==T] <- 'neg'
 
 
 
-
+# Filter and save matricies for different QCs
 Raw_data_no_filt <- Raw_data
 Raw_data <- Raw_data %>% filter(Channel.Q.Value < ChQval)
 
@@ -157,7 +157,7 @@ ggplot(cellenOne_data, aes(x = dropXPos,y = dropYPos,color = label)) +
 ### Negative control vs real cell statistics
 
 
-```{r negative_ctrl ,echo=FALSE, fig.width = 11, fig.height = 4.5}
+```{r negative_ctrl, echo=FALSE, fig.height=, fig.width=11, message=FALSE, warning=FALSE}
 
 #Compute CVs of cells and negative controls
 CVm <- CVs(Raw_data_lim_NF.d,CV_thresh,cellID)
@@ -243,10 +243,10 @@ colnames(numb_protnf) <- 'number_proteins'
 numb_protnf$filt <- 'No Channel Qval filter'
 numb_prot <- rbind(numb_prot,numb_protnf)
 
-pep_number <- ggplot(numb_pep, aes(x = number_peptides, fill = filt)) + geom_histogram(bins = 30,position = 'identity',alpha = .5) + ggtitle('# precursors per sample') + rremove('legend')
+pep_number <- ggplot(numb_pep, aes(x = number_peptides, fill = filt)) + geom_histogram(bins = 30,position = 'identity',alpha = .5) + ggtitle('# precursors per sample') + rremove('legend') + xlab('# precursors/cell')
 
 
-prot_number<- ggplot(numb_prot, aes(x = number_proteins, fill = filt)) + geom_histogram(bins = 30,position = 'identity',alpha = .5) + ggtitle('# proteins per sample')
+prot_number<- ggplot(numb_prot, aes(x = number_proteins, fill = filt)) + geom_histogram(bins = 30,position = 'identity',alpha = .5) + ggtitle('# proteins per sample') + xlab('# Proteins/cell')
 
 pep_number+prot_number
 
@@ -278,9 +278,11 @@ colnames(missingness_cell_mat) <- c('No channel Filter', 'With Filter')
 missingness_cell_mat <- melt(missingness_cell_mat)
 
 mp <- ggplot(missingness_prot_mat, aes(x = value, fill = Var2)) + 
-  geom_histogram(bins = 20,position = 'identity',alpha = .5) + ggtitle(paste0('Protein completness, ',nrow(protein_mat_NF),' proteins'))+rremove('legend')
+  geom_histogram(bins = 20,position = 'identity',alpha = .5) + ggtitle(paste0('Protein completness, ',nrow(protein_mat_NF),' proteins'))+rremove('legend') + xlab('# of a given protein quantified / # of cells')
+
 mc <- ggplot(missingness_cell_mat, aes(x = value, fill = Var2)) + 
-  geom_histogram(bins = 20,position = 'identity',alpha = .5) + ggtitle('Cell completness')
+  geom_histogram(bins = 20,position = 'identity',alpha = .5) + ggtitle('Cell completness')+
+  xlab('# of proteins in a cell / # proteins in matrix (across all cells)')
 
 mp+mc
 
